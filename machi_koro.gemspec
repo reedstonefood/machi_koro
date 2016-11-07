@@ -7,7 +7,7 @@ Gem::Specification.new do |spec|
   spec.name          = "machi_koro"
   spec.version       = MachiKoro::VERSION
   spec.authors       = ["reedstonefood"]
-  spec.email         = ["reedstonefood@@users.noreply.github.com"]
+  spec.email         = ["reedstonefood@users.noreply.github.com"]
 
   spec.summary       = %q{An implementation of the board game, Machi Koro.}
   spec.description   = %q{An implementation of the board game, Machi Koro, and its expansions.}

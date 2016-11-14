@@ -5,8 +5,8 @@ Machi Koro is a game (published by Pandasaurus) based around rolling dice, earni
 This gem is intended to fully model the game. It is up to you to create a front end for it (or a view & controller if we're talking MVC, which is generally A Good Thing). However I will create a command line interface that will show off all the functionality, and let you play a game entirely via an interactive console.
 
 ## Badges
-*[![Code Climate](https://codeclimate.com/github/reedstonefood/machi_koro/badges/gpa.svg)](https://codeclimate.com/github/reedstonefood/machi_koro)
-*[![codebeat badge](https://codebeat.co/badges/de64d7f6-3b84-4217-a867-7b4fa5bd7455)](https://codebeat.co/projects/github-com-reedstonefood-machi_koro)
+* [![Code Climate](https://codeclimate.com/github/reedstonefood/machi_koro/badges/gpa.svg)](https://codeclimate.com/github/reedstonefood/machi_koro)
+* [![codebeat badge](https://codebeat.co/badges/de64d7f6-3b84-4217-a867-7b4fa5bd7455)](https://codebeat.co/projects/github-com-reedstonefood-machi_koro)
 
 ## Installation
 

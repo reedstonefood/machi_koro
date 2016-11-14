@@ -21,8 +21,7 @@ module MachiKoro
 
     def get_establishment(search_criteria)
       if search_criteria.to_s.is_integer?
-        result = @db.execute( "SELECT * FROM establishments
-                                WHERE id = ?",
+        result = @db.execute( "SELECT * FROM establishments WHERE id = ?",
                                 search_criteria)
       else #it's a string!
         result = @db.execute( "SELECT * FROM establishments

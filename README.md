@@ -1,8 +1,12 @@
-# MachiKoro
+# Machi Koro
 
 Machi Koro is a game (published by Pandasaurus) based around rolling dice, earning money and purchasing cards with that money. It's fairly simple, which makes it a good coding project for a newbie Ruby programmer like myself.
 
 This gem is intended to fully model the game. It is up to you to create a front end for it (or a view & controller if we're talking MVC, which is generally A Good Thing). However I will create a command line interface that will show off all the functionality, and let you play a game entirely via an interactive console.
+
+## Badges
+*[![Code Climate](https://codeclimate.com/github/reedstonefood/machi_koro/badges/gpa.svg)](https://codeclimate.com/github/reedstonefood/machi_koro)
+*[![codebeat badge](https://codebeat.co/badges/de64d7f6-3b84-4217-a867-7b4fa5bd7455)](https://codebeat.co/projects/github-com-reedstonefood-machi_koro)
 
 ## Installation
 
@@ -22,10 +26,10 @@ Or install it yourself as:
 
 ## Usage
 
-There will eventually be 3 objects to play with.
-Game - for if you want to play a game of Machi Koro
-Databank - for browsing the database. Can be called directly - but Game will also call it.
-Stats - in a later version, you will be able to look back at stats from older games.
+There will eventually be 3 objects for end users to play with.
+* **Game** - for if you want to play a game of Machi Koro.
+* **Databank** - for browsing the database. Can be called directly - but Game will also call it.
+* **Stats** - in a later version, you will be able to look back at stats from older games.
 
 ## Development
 

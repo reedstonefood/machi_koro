@@ -35,7 +35,17 @@ module MachiKoro
     end
     
     def get_all_establishments
-      @db.execute( "SELECT * FROM establishments" )
+      @db.execute( "SELECT e.*, c.description AS colour
+                      , s.description AS symbol
+                      , ex.description AS expansion
+                      , alt.description AS alternative_income_method
+                    FROM establishments e
+                    INNER JOIN colours c ON e.colour_id = c.id
+                    INNER JOIN symbols s ON e.symbol_id = s.id
+                    INNER JOIN expansions ex ON e.expansion_id = ex.id
+                    LEFT JOIN alternative_income_methods alt
+                      ON e.alternative_income_method_id = alt.id
+                    ORDER BY from_roll ASC, to_roll ASC" )
     end
     
   end

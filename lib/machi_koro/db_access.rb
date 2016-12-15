@@ -48,5 +48,19 @@ module MachiKoro
                     ORDER BY from_roll ASC, to_roll ASC" )
     end
     
+    def get_all_landmarks
+      # this statement isn't ANSI-standard so may need changing on non SQLite DB's
+      @db.execute( "SELECT l.*
+                      , ex.description AS expansion
+                      , GROUP_CONCAT(s.description) AS boosted_symbols
+                    FROM landmarks l
+                    INNER JOIN expansions ex ON l.expansion_id = ex.id
+                    LEFT JOIN landmark_symbol_boosts lsb
+                      ON lsb.landmark_id = l.id
+                    LEFT JOIN symbols s ON s.id = lsb.symbol_id
+                    GROUP BY l.id
+                    ORDER BY l.cost DESC" )
+    end
+    
   end
 end

@@ -26,4 +26,14 @@ describe MachiKoro::DBAccess do
       expect(data.length).to be(20)
     end
   end
+  
+  context "get all landmarks" do
+    let(:data) {db.get_all_landmarks}
+    it "returns an array" do
+      expect(data).to be_a(Array)
+    end
+    it "should return all 7 landmarks" do
+      expect(data.length).to be(7)
+    end
+  end
 end

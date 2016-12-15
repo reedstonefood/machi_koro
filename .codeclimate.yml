@@ -1,26 +1,28 @@
-
 engines:
-  duplication:
-    enabled: true
-    config:
-      languages:
-        ruby:
-          mass_threshold: 20
-      - javascript
-      - python
-      - php
-  fixme:
-    enabled: true
   rubocop:
     enabled: true
+    #checks:
+    #	Rubocop/Metrics/ClassLength:
+    #  	enabled: false
+  golint:
+   	enabled: true
+  eslint:
+    enabled: true
+  csslint:
+    enabled: true
+  duplication:
+  	enabled: true
+    config:
+    	languages:
+      - ruby
+      	mass_threshold: 20
+      - javascript
 ratings:
   paths:
-  - "**.inc"
-  - "**.js"
-  - "**.jsx"
-  - "**.module"
-  - "**.php"
-  - "**.py"
+  - app/**
+  - lib/**
   - "**.rb"
+  - "**.go"
 exclude_paths:
-- spec/
+- spec/**/*
+- "**/vendor/**/*"

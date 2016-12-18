@@ -54,15 +54,10 @@ module MachiKoro
     
     def is_activated(roll, owners_turn)
       return false if !(@attribute[:from_roll] <= roll && @attribute[:to_roll] >= roll)
-      if @attribute[:colour] == :blue
-        true
-      elsif @attribute[:colour] == :green && owners_turn
-        true
-      elsif @attribute[:colour] == :red && !owners_turn
-        true
-      else 
-        false # a catch-all... shouldn't really happen
-      end
+      return true if @attribute[:colour] == :blue
+      return true if @attribute[:colour] == :green && owners_turn
+      return true if @attribute[:colour] == :red && !owners_turn
+      false # a catch-all... shouldn't really happen
     end
     
     def justified_effect
@@ -162,23 +157,23 @@ module MachiKoro
     def initialize
       @db = DBAccess.new
     end
+    
+    def load_from_db(var, class_name, method_that_loads)
+      var = Array.new()
+      @db.send(method_that_loads).each do |data|
+        var << eval("#{class_name}.new(data)")
+      end
+      var
+    end
 
     def establishments
       return @establishments if defined? @establishments
-      @establishments = Array.new()
-      @db.get_all_establishments.each do |data|
-        @establishments << MachiKoro::Establishment.new(data)
-      end
-      @establishments
+      load_from_db(@establishments, Establishment, :get_all_establishments)
     end
     
     def landmarks
       return @landmarks if defined? @landmarks
-      @landmarks = Array.new()
-      @db.get_all_landmarks.each do |data|
-        @landmarks << MachiKoro::Landmark.new(data)
-      end
-      @landmarks
+      load_from_db(@landmarks, Landmark, :get_all_landmarks)
     end
     
   end

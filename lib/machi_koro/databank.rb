@@ -1,4 +1,4 @@
-require_relative 'db_access'
+#require_relative 'db_access'
 require 'json'
 #http://stackoverflow.com/questions/2070010/how-to-output-my-ruby-commandline-text-in-different-colours
 #with help for other colours from...
@@ -114,7 +114,7 @@ module MachiKoro
   end
   
   class Landmark
-    attr_reader :name, :effect, :cost, :coin_boost, :boosted_symbols, :ability, :expansion
+    attr_reader :name, :effect, :cost, :coin_boost, :boosted_symbols, :ability, :expansion, :pre_built
 
     def initialize(data)
       @ability = Array.new()
@@ -124,6 +124,7 @@ module MachiKoro
       
       @name = data["description"]
       @effect = data["effect"]
+      @pre_built = data["description"]=='City Hall' ? true : false
       @cost = data["cost"].to_i
       @coin_boost = data["coin_boost"].to_i
       @expansion = data["expansion"].downcase.to_sym

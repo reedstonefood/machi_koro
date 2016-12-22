@@ -97,7 +97,8 @@ describe MachiKoro::Landmark do
               "harbour" => "1", 
               "two_dice" => 0,
               "expansion" => "Harbour",
-              "cost" => "2"
+              "cost" => "2",
+              "pre_built" => false
             }
   let(:lm) { MachiKoro::Landmark.new(lm_data) }
   context "A harbour" do
@@ -112,6 +113,9 @@ describe MachiKoro::Landmark do
     end
     it "is from the harbour expansion" do
       expect(lm.expansion).to eq(:harbour)
+    end
+    it "is not pre-built" do
+      expect(lm.pre_built).to eq(false)
     end
   end
 end

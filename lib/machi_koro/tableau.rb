@@ -7,17 +7,18 @@ module MachiKoro
     # (card_type(Establishment), card_count (Integer))
     # eacof of these pairs is referred to as a slot
 
-    attr_reader :deck, :deck_size
+    attr_reader :deck, :deck_size, :distinct_count
   
     def initialize
       @deck = Array.new()
-      @deck_size = 0
+      @deck_size, @distinct_count = 0, 0
     end
 
     def add_card(new_card)
       slot = @deck.find { |d| d[0]==new_card}
       if slot.nil?
         @deck << [new_card, 1]
+        @distinct_count += 1
       else
         slot[1] += 1
       end
@@ -31,16 +32,20 @@ module MachiKoro
         @deck_size += -1
         if slot[1] == 0
           @deck.delete(slot)
+          @distinct_count += -1
         end
       end
     end
     
-    def random_card(from_roll = 0, to_roll = 99)
+    def random_card(from_roll = 0, to_roll = 99, only_purple = false)
       matching_cards = Array.new()
       #produce an array containing only the rolls that meet the criteria
-      if !(from_roll == 0 && to_roll == 99)
+      if !(from_roll == 0 && to_roll == 99 && only_purple==false)
         sub_deck = @deck.find_all do |slot|
-          slot[0].attribute[:to_roll] >= from_roll && slot[0].attribute[:from_roll] <= to_roll
+          slot[0].attribute[:to_roll] >= from_roll && \
+            slot[0].attribute[:from_roll] <= to_roll && \
+            (( slot[0].attribute[:colour]==:purple && only_purple==true) || \
+             ( slot[0].attribute[:colour]!=:purple && only_purple==false))
         end
       else
         sub_deck = @deck

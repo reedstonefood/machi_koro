@@ -24,8 +24,19 @@ describe MachiKoro::Tableau do
               "symbol" => "cup", 
               "expansion" => "Original"
             }
+  stadium_data = { "id" => 6, 
+              "description" => "Stadium", 
+              "effect" => "2 coins from all other players", 
+              "from_roll" => "6", 
+              "to_roll" => "6", 
+              "base_income" => "2", 
+              "colour" => "purple", 
+              "symbol" => "landmark", 
+              "expansion" => "Original"
+            }
   let(:wf) { MachiKoro::Establishment.new(wf_data) }
   let(:cafe) { MachiKoro::Establishment.new(cafe_data) }
+  let(:stadium) { MachiKoro::Establishment.new(stadium_data) }
   context "an empty tableau" do
     it "has 0 cards to start with" do
       expect(t.deck_size).to eq(0)
@@ -77,15 +88,19 @@ describe MachiKoro::Tableau do
       expect(t.card_exists(cafe)).to eq(false)
     end
   end
-  context "given a wheat field and a cafe" do
+  context "given a wheat field, cafe and stadium" do
     before { t.add_card(wf)
              t.add_card(cafe)
+             t.add_card(stadium)
            }
     it "gives wheat field when asked for low random card" do
       expect(t.random_card(1,2)).to eq(wf)
     end
-    it "gives cafe when asked for higher random card" do
+    it "gives cafe when asked for higher non purple random card" do
       expect(t.random_card(3,45)).to eq(cafe)
+    end
+    it "gives stadium when asked for a purple random card" do
+      expect(t.random_card(1,99,true)).to eq(stadium)
     end
   end
 end

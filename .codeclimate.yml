@@ -6,9 +6,9 @@ engines:
       languages:
         ruby:
           mass_threshold: 20
-      - javascript
-      - python
-      - php
+        javascript:
+        python:
+        php:
   fixme:
     enabled: true
   rubocop:

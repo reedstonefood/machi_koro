@@ -1,5 +1,4 @@
 module MachiKoro
-  VERSION = "0.1.0"
-  # This version isn't changing until there is something
-  # substantial in this gem
+  VERSION = "0.0.1"
+  # 0.0.1 = Dev version
 end

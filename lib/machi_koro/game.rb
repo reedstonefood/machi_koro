@@ -10,7 +10,7 @@ DEFAULT_MONEY = 3
   
     attr_reader :players, :town, :stockpile, :log
 
-    def initialize
+    def initialize(mode = nil)
       @log = MachiKoro::Log.new
       @log.add(__callee__, "A new Game object is being created")
       @town = MachiKoro::Tableau.new

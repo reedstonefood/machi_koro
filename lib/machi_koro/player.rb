@@ -14,7 +14,15 @@ module MachiKoro
       @unbuilt_landmarks = unbuilt_l
     end
     
+    def has_ability(needle)
+      abilities = built_landmarks.reduce([]) { |arr, l| arr.concat(l.ability) }
+      abilities.include?(needle)
+    end
 
+    def symbol_boosts()
+    
+    end
+    
   end
 
 end

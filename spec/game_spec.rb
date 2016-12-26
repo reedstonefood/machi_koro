@@ -6,17 +6,17 @@ describe MachiKoro::Game do
   context "When adding a player called Bob" do
     before { g.add_player("Bob") }
       it "first player is called Bob" do
-        expect(g.player_list[0].name).to eq("Bob")
+        expect(g.players[0].name).to eq("Bob")
       end
       it "player should have a tableau of 2 cards" do
-        expect(g.player_list[0].tableau.deck_size).to eq(2)
+        expect(g.players[0].tableau.deck_size).to eq(2)
       end
       it "should have one built landmark (City Hall)" do
-        expect(g.player_list[0].built_landmarks.size).to eq(1)
-        expect(g.player_list[0].built_landmarks[0].name).to eq("City Hall")
+        expect(g.players[0].built_landmarks.size).to eq(1)
+        expect(g.players[0].built_landmarks[0].name).to eq("City Hall")
       end
       it "should have six unbuilt landmarks" do
-        expect(g.player_list[0].unbuilt_landmarks.size).to eq(6)
+        expect(g.players[0].unbuilt_landmarks.size).to eq(6)
       end
     end
   context "the town" do

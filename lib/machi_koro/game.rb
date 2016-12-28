@@ -20,8 +20,20 @@ DEFAULT_MONEY = 3
       initialize_town
     end
     
+    def validate_player_name(check)
+      if check.length < 1 || check.length > 30
+        @log.add(__callee__, "Name length < 1 or > 30 (#{check})")
+        return false
+      elsif !@players.find { |p| p.name == check}.nil?
+        @log.add(__callee__, "Name already exists (#{check})")
+        return false
+      end
+      true
+    end
+    
     def add_player(name)
       players_so_far = @players.count
+      return false if validate_player_name(name)==false
       if players_so_far >= MAX_PLAYER_LIMIT
         @log.add(__callee__, "Too many players")
         return false 

@@ -1,36 +1,124 @@
 module MachiKoro
 
+  class DiceRoll
+  
+    attr_reader :dice_count, :reroll_available, :harbour_available
+  
+    def initialize(dice_count, reroll_available, harbour_available, log)
+      @dice_count = dice_count
+      @reroll_available = reroll_available
+      @harbour_available = harbour_available
+      @harbour_used = false
+      @log = log
+    end
+    
+    def roll
+      if (defined? @dice) && @reroll_available == false
+        @log.add(__callee__, "Someone tried to roll the dice again!")
+        return @dice
+      end
+      if (defined? @dice) && @reroll_available == true
+        @reroll_available = false
+        @log.add(__callee__, "Re-roll selected")
+      end
+      @dice = Array.new()
+      @dice_count.times { @dice << rand(6) }
+      @log.add(__callee__, "The dice were rolled : #{@dice}")
+      @dice
+    end
+    
+    def sum_dice(input = @roll)
+      @sum_dice ||= input.inject(0, :+)
+    end
+    
+    def use_harbour
+      if @harbour_used==false && @sum_dice >=10 && @harbour_available == true
+        @sum_dice += 2
+        @harbour_used = true
+        @log.add(__callee__, 'Harbour has been activated')
+        true
+      else
+        @log.add(__callee__, 'Harbour is not useable')
+        false
+      end
+    end
+    
+    def is_double
+      if defined? @dice && @dice_count >= 2
+        return @dice[0]==@dice[1] ? true : false
+      end
+      return false
+    end
+  end
+
   class Turn
+
+    # each turn, the following steps happen / must be checked
+    # Useful to prompt the front end regarding what is to be done next
+    @@stages = [:train_station,
+                :roll,
+                :consider_reroll,
+                :consider_harbour,
+                :activate_buildings,
+                :consider_dole_money,
+                :purchase_card,
+                :check_for_win,
+                :consider_airport,
+                :end_turn]
   
     def initialize(game, player)
       @g = game
       @p = player
       @g.log.add(__callee__, "A new turn has been created (#{player.name})")
       #@p_abilities = @p.built_landmarks.reduce([]) { |arr, l| arr.concat(l.ability) }
-      @reroll_available = @p.has_ability(:reroll)? false : true
+      @purchased_card = nil
+      @stage = @@stages[0]
+      
+      
     end
     
     def roll_dice(dice_count)
-      if (defined? @roll) && @reroll_available == false
-        @g.log.add(__callee__, "Someone tried to roll the dice again!")
-        return @roll
-      end
-      if (defined? @roll) && @reroll_available == true
-        @reroll_available = false
-        @g.log.add(__callee__, "Re-roll selected")
-      end
-      @roll = Array.new()
-      dice_count.times { @roll << rand(6) }
-      @g.log.add(__callee__, "The dice were rolled : #{@roll}")
-      @roll
+      @dice ||= DiceRoll.new(dice_count, 
+                              @p.has_ability(:reroll)? false : true,
+                              @p.has_ability(:harbour)? false : true,
+                              @g.log)
+      @dice.roll
     end
 
-    def sum_dice(input = @roll)
-      return input.inject(0, :+)# if defined? @roll
-      #false
+    # will return an error unless you roll the dice first
+    def sum_dice(input = nil)
+      return @dice.sum_dice(input)
     end
 
-    def resolution_order()
+    # will return an error unless you roll the dice first
+    def use_harbour
+      @dice.use_harbour
+    end
+    
+    def use_town_hall
+      if @p.money==0 && @p.has_ability(:dole_money)
+        @p.money+=1
+        @g.log.add(__callee__, 'Town hall activated - 1 money given')
+        true
+      else
+        @g.log.add(__callee__, 'Town hall is not useable')
+        false
+      end
+    end
+    
+    def use_airport
+      if @purchased_card.nil? && @p.has_ability(:no_buy_boost)
+        @p.money+=10
+        @g.log.add(__callee__, 'Airport activated - 10 money given')
+        true
+      else
+        @g.log.add(__callee__, 'Airport is not useable')
+        false
+      end
+    end 
+    
+    # anti-clockwise, starting with the player whose turn it is
+    def resolution_order
       return @resolution_order if defined? @resolution_order
       @resolution_order = @g.players.reverse
       @resolution_order.rotate!(@resolution_order.index(@p))
@@ -63,11 +151,6 @@ module MachiKoro
     def process_blue(blue_array)
       #curr_player = 0
       blue_array.each do |slot|
-        #if curr_player <> slot[2]
-        #  curr_player = slot[2]
-        #  abilities = curr_player.built_landmarks.reduce([]) { |arr, l| arr.concat(l.ability) }
-        #  boosted_symbols = curr_player.built_landmarks.reduce([]) { |arr, l| arr.concat(l.boosted_symbols).flatten }
-        #end
         income = slot[0].attribute[:base_income] * slot[1]
         @g.log.add(__callee__, "#{slot[2].name} has #{slot[1]} x #{slot[0].attribute[:name]} = #{income}")
         slot[2].money += income
@@ -77,7 +160,7 @@ module MachiKoro
     def process_green(green_array)
       green_array.each do |slot|
         income = slot[0].attribute[:base_income] * slot[1]
-        @g.log.add(__callee__,"#{slot[2].name} has #{slot[1]} x #{slot[0].attribute[:name]} = {income}")
+        @g.log.add(__callee__,"#{slot[2].name} has #{slot[1]} x #{slot[0].attribute[:name]} = #{income}")
         slot[2].money += income
       end
     end

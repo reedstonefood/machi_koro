@@ -27,6 +27,7 @@ end
 module MachiKoro
 
   class Establishment
+    @@w = 36 # width of "card"
   
     attr_reader :attribute, :id
   
@@ -88,13 +89,12 @@ module MachiKoro
     end
     
     def console_output
-      w = 36 # width of "card"
-      str = '*' * (w+2) + "\n"
-      str << '*' << self.roll_range.center(w) << "* #{je[0]}\n"
-      str << '*' << @attribute[:name].capitalize.center(w) << "* #{je[1]}\n"
-      str << '*' << " Symbol : #{@attribute[:symbol]} ".center(w) << "* #{je[2]}\n"
-      str << '*' << " Cost : #{@attribute[:cost]} ".center(w) << "* #{je[3]}\n"
-      str << '*' * (w+2) << " #{je[4]}"
+      str = '*' * (@@w+2) + "\n"
+      str << '*' << self.roll_range.center(@@w) << "* #{je[0]}\n"
+      str << '*' << @attribute[:name].capitalize.center(@@w) << "* #{je[1]}\n"
+      str << '*' << " Symbol : #{@attribute[:symbol]} ".center(@@w) << "* #{je[2]}\n"
+      str << '*' << " Cost : #{@attribute[:cost]} ".center(@@w) << "* #{je[3]}\n"
+      str << '*' * (@@w+2) << " #{je[4]}"
       puts str.colour(ansi_colour)
     end
     
@@ -114,6 +114,7 @@ module MachiKoro
   end
   
   class Landmark
+    @@w = 60 # width of "card"
     attr_reader :name, :effect, :cost, :coin_boost, :boosted_symbols, :ability, :expansion, :pre_built
 
     def initialize(data)
@@ -136,16 +137,12 @@ module MachiKoro
     end
     
     def console_output
-      w = 60 # width of "card"
-      str = '*' * (w+2) + "\n"
-      str << '*' << "#{@name} ".center(w) << "*\n"
-      str << '*' << " Cost : #{@cost} ".center(w) << "*\n"
+      str = '*' * (@@w+2) + "\n"
+      str << '*' << "#{@name} ".center(@@w) << "*\n"
+      str << '*' << " Cost : #{@cost} ".center(@@w) << "*\n"
       str << "* #{@effect}"
-      if @effect.length <= w-3
-        str << " " * (w-1 - @effect.length) 
-        str << "*"
-      end
-      str << "\n" << "*" * (w+2) << "\n"
+      str << (" " * (@@w-1 - @effect.length))  << '*' if @effect.length <= @@w-3
+      str << "\n" << "*" * (@@w+2) << "\n"
       puts str
     end
 

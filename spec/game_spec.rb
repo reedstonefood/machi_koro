@@ -32,4 +32,19 @@ describe MachiKoro::Game do
       expect(g.stockpile).to be_a_kind_of(MachiKoro::Tableau)
     end
   end
+  context "name validator" do
+    before { g.add_player("Bob") }
+    it "rejects a duplicate name" do
+      expect(g.validate_player_name("Bob")).to eq(false)
+    end
+    it "rejects an empty string" do
+      expect(g.validate_player_name("")).to eq(false)
+    end
+    it "allows a new, different name" do
+      expect(g.validate_player_name("Sauron")).to eq(true)
+    end
+    it "rejects a name of 31 characters" do
+      expect(g.validate_player_name("qwertyuiopasdfghjklzxcvbnm12345")).to eq(false)
+    end
+  end
 end

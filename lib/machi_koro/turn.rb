@@ -131,6 +131,7 @@ module MachiKoro
   
   class Turn
 
+    attr_accessor :stage
     # each turn, the following steps happen / must be checked
     # Useful to prompt the front end regarding what is to be done next
     @@stages = [:train_station,

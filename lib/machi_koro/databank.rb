@@ -88,6 +88,7 @@ module MachiKoro
       "#{@attribute[:from_roll]}-#{@attribute[:to_roll]}"
     end
     
+    # codebeat:disable[ABC]
     def console_output
       str = '*' * (@@w+2) + "\n"
       str << '*' << self.roll_range.center(@@w) << "* #{je[0]}\n"
@@ -97,6 +98,7 @@ module MachiKoro
       str << '*' * (@@w+2) << " #{je[4]}"
       puts str.colour(ansi_colour)
     end
+    # codebeat:enable[ABC]
     
     private
     def ansi_colour
@@ -113,6 +115,9 @@ module MachiKoro
     end
   end
   
+  # disabling codebeat checks... console_output is not too complex
+  # the other complaint was number of instance variables, but this accurately reflects the domain
+  # codebeat:disable[ABC,TOO_MANY_IVARS]
   class Landmark
     @@w = 60 # width of "card"
     attr_reader :name, :effect, :cost, :coin_boost, :boosted_symbols, :ability, :expansion, :pre_built
@@ -147,7 +152,7 @@ module MachiKoro
     end
 
   end
-  
+  # codebeat:enable[ABC,TOO_MANY_IVARS]
   
   class Databank
   

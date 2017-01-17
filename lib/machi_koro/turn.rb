@@ -23,7 +23,7 @@ module MachiKoro
       do_roll
     end
     
-    def sum_dice(input = @roll)
+    def sum_dice(input = @dice)
       @sum_dice ||= input.inject(0, :+)
     end
     
@@ -48,7 +48,7 @@ module MachiKoro
     private
     def do_roll
       @dice = Array.new()
-      @dice_count.times { @dice << rand(6) }
+      @dice_count.times { @dice << 1 + rand(6) }
       @log.add(__callee__, "The dice were rolled : #{@dice}")
       @dice
     end
@@ -131,11 +131,10 @@ module MachiKoro
   
   class Turn
 
-    attr_accessor :stage
+    attr_accessor :stage, :player
     # each turn, the following steps happen / must be checked
     # Useful to prompt the front end regarding what is to be done next
-    @@stages = [:train_station,
-                :roll,
+    @@stages = [:roll,
                 :consider_reroll,
                 :consider_harbour,
                 :activate_buildings,
@@ -147,7 +146,7 @@ module MachiKoro
   
     def initialize(game, player)
       @g = game
-      @p = player
+      @player = player
       @g.log.add(__callee__, "A new turn has been created (#{player.name})")
       #@p_abilities = @p.built_landmarks.reduce([]) { |arr, l| arr.concat(l.ability) }
       @purchased_card = nil
@@ -155,17 +154,17 @@ module MachiKoro
       @BuildingResolver = BuildingResolver.new(game.log, player, game.players)
     end
     
+    
     def roll_dice(dice_count)
       @dice ||= DiceRoll.new(dice_count, 
-                              @p.has_ability(:reroll)? false : true,
-                              @p.has_ability(:harbour)? false : true,
+                              @player.has_ability(:reroll)? false : true,
+                              @player.has_ability(:harbour)? false : true,
                               @g.log)
       @dice.roll
     end
 
-    # will return an error unless you roll the dice first
-    def sum_dice(input = nil)
-      return @dice.sum_dice(input)
+    def sum_dice
+      return @dice.sum_dice
     end
 
     # will return an error unless you roll the dice first
@@ -174,8 +173,8 @@ module MachiKoro
     end
     
     def use_town_hall
-      if @p.money==0 && @p.has_ability(:dole_money)
-        @p.money+=1
+      if @player.money==0 && @player.has_ability(:dole_money)
+        @player.money+=1
         @g.log.add(__callee__, 'Town hall activated - 1 money given')
         true
       else
@@ -185,8 +184,8 @@ module MachiKoro
     end
     
     def use_airport
-      if @purchased_card.nil? && @p.has_ability(:no_buy_boost)
-        @p.money+=10
+      if @purchased_card.nil? && @player.has_ability(:no_buy_boost)
+        @player.money+=10
         @g.log.add(__callee__, 'Airport activated - 10 money given')
         true
       else
@@ -203,6 +202,10 @@ module MachiKoro
     
     def get_cards(roll_val); @BuildingResolver.get_cards(roll_val); end
     
+    def next_stage
+      return false if @stage == @@stages.last
+      @stage = @@stages[@@stages.index(@stage)+1]
+    end
   end
 
 end

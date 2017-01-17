@@ -8,7 +8,7 @@ DEFAULT_MONEY = 3
 
   class Game
   
-    attr_reader :players, :town, :stockpile, :log
+    attr_reader :players, :town, :stockpile, :log, :databank
 
     def initialize(mode = nil)
       @log = MachiKoro::Log.new

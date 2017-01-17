@@ -60,4 +60,14 @@ describe MachiKoro::Turn do
       expect(g.players[2].money).to eq(MachiKoro::DEFAULT_MONEY)
     end
   end
+  
+  context "stages of a turn" do
+    it "first stage is train station" do
+      expect(t.stage).to eq(:roll)
+    end
+    it "the next stage is roll_dice" do
+      t.next_stage
+      expect(t.stage).to eq(:consider_reroll)
+    end
+  end
 end

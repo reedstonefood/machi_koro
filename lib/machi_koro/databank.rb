@@ -36,15 +36,19 @@ module MachiKoro
       [:cost, :from_roll, :to_roll, :base_income].each do |attr|
         @attribute[attr] = data[attr.to_s].to_i
       end
-      [:colour, :symbol, :expansion].each do |attr|
-        @attribute[attr] = data[attr.to_s].downcase.to_sym # haha, symbol.to_sym
+      [:colour, :symbol, :expansion, :required_landmark, :symbol_multiplier, :establishment_multiplier].each do |attr|
+      #[:colour, :symbol, :expansion].each do |attr|
+        if data[attr.to_s].nil? # some of the attributes may be NULL in the database
+          @attribute[attr] = nil
+        else 
+          @attribute[attr] = data[attr.to_s].downcase.to_sym# haha, symbol.to_sym
+        end
       end
       
       @id = data["id"].to_i
       @attribute[:name] = data["description"]
       @attribute[:effect] = data["effect"]
       
-      #TODO id's that will activate the building
       
       @attribute[:alternative_income_method] = data["alternative_income_method"].to_sym if !data["alternative_income_method"].nil? # line too long?
     end

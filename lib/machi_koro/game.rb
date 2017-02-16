@@ -3,6 +3,7 @@ require 'date'
 
 module MachiKoro
 
+TOWN_SIZE = 10 # change to 12 when purple cards are added
 MAX_PLAYER_LIMIT = 5
 DEFAULT_MONEY = 3
 

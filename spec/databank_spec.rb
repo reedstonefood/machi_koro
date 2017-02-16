@@ -58,6 +58,23 @@ describe MachiKoro::Establishment do
     end
   end
   
+  cf_data = { "id" => 11, 
+              "description" => "Cheese Factory", 
+              "effect" => "Get 3 coins from the bank for each Animal establishment you own, on your turn only.", 
+              "from_roll" => "7", 
+              "to_roll" => "7", 
+              "base_income" => "3", 
+              "colour" => "blue", 
+              "symbol_multiplier" => :animal
+            }
+  let(:cf) { MachiKoro::Establishment.new(cf_data) }
+  context "A cheese factory field" do
+    it "multiplies animal symbols" do
+      expect(cf.attribute[:symbol_multiplier]).to eq(:animal)
+    end
+  end
+  
+  
   red_card_data = Hash.new("bob")
   red_card_data["colour"] = "red"
   red_card_data["from_roll"] = 2

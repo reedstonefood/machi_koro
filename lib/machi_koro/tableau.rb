@@ -5,7 +5,7 @@ module MachiKoro
   class Tableau
     # deck is an array of length two arrays
     # (card_type(Establishment), card_count (Integer))
-    # eacof of these pairs is referred to as a slot
+    # eachof of these pairs is referred to as a slot
 
     attr_reader :deck, :deck_size, :distinct_count
   
@@ -55,8 +55,13 @@ module MachiKoro
       matching_cards.sample
     end
     
+    # maybe this can go?
     def card_exists(searched_card)
       @deck.any? {|slot| slot[0]==searched_card}
+    end
+    
+    def card_count(searched_card)
+      @deck.find {|slot| slot[0]==searched_card}[1]
     end
     
     def symbol_count(target)
@@ -65,7 +70,7 @@ module MachiKoro
     end
     
     def console_output()
-      output = "Contents of tableau\n"
+      output = ""
       return output << "EMPTY!" if @deck_size==0
       @deck.each_with_index do |slot, index|
         output << "#{index+1}) #{slot[1]} x #{slot[0].attribute[:name]}\n"

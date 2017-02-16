@@ -39,12 +39,18 @@ module MachiKoro
                       , s.description AS symbol
                       , ex.description AS expansion
                       , alt.description AS alternative_income_method
+                      , re.description AS establishment_multiplier
+                      , rs.description AS symbol_multiplier
+                      , rl.description AS required_landmark
                     FROM establishments e
                     INNER JOIN colours c ON e.colour_id = c.id
                     INNER JOIN symbols s ON e.symbol_id = s.id
                     INNER JOIN expansions ex ON e.expansion_id = ex.id
                     LEFT JOIN alternative_income_methods alt
                       ON e.alternative_income_method_id = alt.id
+                    LEFT JOIN establishments re ON e.activate_required_establishment_id = re.id
+                    LEFT JOIN symbols rs ON e.activate_required_symbol_id = rs.id
+                    LEFT JOIN landmarks rl ON e.activate_required_landmark_id = rl.id
                     ORDER BY from_roll ASC, to_roll ASC" )
     end
     

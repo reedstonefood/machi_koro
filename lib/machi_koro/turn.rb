@@ -96,10 +96,18 @@ module MachiKoro
       process_purple(slots[:purple])
     end
     
+    # Disabling ABC checks - each of these methods seems self-contained & well defined
+    # It would feel artificial to cut them up anymore
+    # codebeat:disable[ABC]
     def process_blue(blue_array)
       #curr_player = 0
       blue_array.each do |slot|
         income = slot[0].attribute[:base_income] * slot[1]
+        income = tuna_boats if slot[0].attribute[:alternative_income_method] == :"roll 2D6"
+        if !slot[0].attribute[:required_landmark].nil?
+          income = 0 if player.built_landmarks.find { |l| l.name == slot[0].attribute[:required_landmark] }.nil?
+        end
+        #TODO TUNA BOATS!!!!
         @log.add(__callee__, "#{slot[2].name} has #{slot[1]} x #{slot[0].attribute[:name]} = #{income}")
         slot[2].money += income
       end
@@ -107,28 +115,48 @@ module MachiKoro
     
     def process_green(green_array)
       green_array.each do |slot|
+        #TODO make this more generic than the current shopping mall
+        multiplier = slot[2].has_ability(:symbol_boost) && slot[0].attribute[:symbol] == :bread ? 2 : 1 # this models the shopping mall, but doesn't model all the DB can hold
         income = slot[0].attribute[:base_income] * slot[1]
-        @log.add(__callee__,"#{slot[2].name} has #{slot[1]} x #{slot[0].attribute[:name]} = #{income}")
+        if !slot[0].attribute[:establishment_multiplier].nil?
+          income = income * player.tableau.symbol_count(slot[0].attribute[:establishment_multiplier])
+        end
+        if !slot[0].attribute[:symbol_multiplier].nil?
+          income = income * player.tableau.symbol_count(slot[0].attribute[:symbol_multiplier])
+        end
+        @log.add(__callee__,"#{slot[2].name} has #{slot[1]} x #{multiplier} x #{slot[0].attribute[:name]} x possibly something else = #{income}")
         slot[2].money += income
       end
     end
     
     def process_red(red_array)
       red_array.each do |slot|
-        income = slot[0].attribute[:base_income] * slot[1]
-        income = @p.money if @p.money < income
-        @log.add(__callee__,"#{slot[2].name} has #{slot[1]} x #{slot[0].attribute[:name]} = #{income} from #{@p.name}")
-        slot[2].cash += income
-        @p.cash += -income
+        #TODO make this more generic than the current shopping mall
+        multiplier = slot[2].has_ability(:symbol_boost) ? 2 : 1 # this models the shopping mall, but doesn't model all the DB can hold
+        income = slot[0].attribute[:base_income] * multiplier * slot[1]  # Total due according to cards
+        income = @p.money if @p.money < income              # The player can't lose more money than they have
+        log_msg = "#{slot[2].name} has #{slot[1]} x #{multiplier} x #{slot[0].attribute[:name]} = #{income} from #{@p.name}"
+        @log.add(__callee__,log_msg)
+        slot[2].money += income
+        @p.money += -income
       end
     end
+    # codebeat:enable[ABC]
     
     def process_purple(purple_array)
       #TODO once purple cards are added
     end
+    
+    # Yay, tuna boats are awesome
+    def tuna_boats()
+      @tuna_haul ||= (1 + rand(6)) + (1 + rand(6))
+      @log.add(__callee__,"Looks like Tuna Boats! The roll is #{tuna_haul}")
+      return tuna_haul
+    end
   
   end
   
+  # codebeat:disable[TOO_MANY_IVARS]
   class Turn
 
     attr_accessor :stage, :player
@@ -207,5 +235,5 @@ module MachiKoro
       @stage = @@stages[@@stages.index(@stage)+1]
     end
   end
-
+  # codebeat:enable[TOO_MANY_IVARS]
 end

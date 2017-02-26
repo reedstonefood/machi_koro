@@ -19,13 +19,16 @@ module MachiKoro
     #            :end_turn]
     
     def roll(turn)
+      dice_count = nil
       if turn.player.has_ability(:two_dice)
         @@cli.choose do |menu|
           menu.prompt = "Roll one dice or two? "
-          menu.choice(:one) { dice_count = 1 }
-          menu.choice(:two) { dice_count = 2 }
+          menu.choice(:one) { dice_count = 1 } #dice_count = 1
+          menu.choice(:two) { dice_count = 2 } #dice_count = 2
         end
-      else dice_count = 1; end
+      else
+        dice_count = 1
+      end
       loop do
         a = @@cli.ask "Press enter to roll > "
         break if !common_options(a)
@@ -38,13 +41,14 @@ module MachiKoro
     
     def consider_reroll(turn)
       @@cli.say "CONSIDER REROLL!!!"
+      answer = nil
       if turn.player.has_ability(:reroll)
         loop do
-          a = @@cli.ask "Do you want to re-roll your roll of (#{turn.sum_dice})? "
-          break if YES_NO_VALUES.include? a
-          common_options(a)
+          answer = @@cli.ask "Do you want to re-roll your roll of (#{turn.sum_dice})? "
+          break if YES_NO_VALUES.include? answer
+          common_options(answer)
         end
-        if YES_VALUES.include? a
+        if YES_VALUES.include? answer
           @@cli.say "OK, you can roll again."
           turn.stage = :roll
         else
@@ -54,13 +58,14 @@ module MachiKoro
     end
     
     def consider_harbour(turn)
+      answer = nil
       if turn.player.has_ability(:harbour) && turn.sum_dice >= 10
         loop do
-          a = @@cli.ask "Do you want to use your harbour to add 2 to your roll of (#{turn.sum_dice})? "
-          break if YES_NO_VALUES.include? a
-          common_options(a)
+          answer = @@cli.ask "Do you want to use your harbour to add 2 to your roll of (#{turn.sum_dice})? "
+          break if YES_NO_VALUES.include? answer
+          common_options(answer)
         end
-        if YES_VALUES.include? a
+        if YES_VALUES.include? answer
           turn.use_harbour
           @@cli.say "OK, your roll is now (#{turn.sum_dice})"
         end

@@ -73,9 +73,9 @@ module MachiKoro
     end
     
     def activate_buildings(turn)
-      @@cli.say "Starting to activate buildings."
+      @@cli.say "Starting to activate buildings." if @verbose == true
       turn.process_cards(turn.sum_dice)
-      @@cli.say "Finished activating buildings."
+      @@cli.say "Finished activating buildings." if @verbose == true
     end
     
     def consider_dole_money(turn)
@@ -86,7 +86,7 @@ module MachiKoro
           @@cli.say "You are due 1 coin from the Town Hall, but the code failed."
         end
       else
-        @@cli.say "You do not meet the criteria for dole money."
+        @@cli.say "You do not meet the criteria for dole money." if @verbose == true
       end
     end
     
@@ -94,6 +94,7 @@ module MachiKoro
     # These are defined in the first line of the method
     
     def process_purchase_of_card(turn, chosen_data)
+      @purchased_card = chosen_data[1] #TODO I don't think this should be in the CLI
       type_of_card, card, card_cost = chosen_data[0], chosen_data[1], chosen_data[2]
       turn.player.money = turn.player.money - card_cost
       if type_of_card == :landmark
@@ -162,7 +163,7 @@ module MachiKoro
     end
     
     def consider_airport(turn)
-      if turn.player.has_ability(:no_buy_boost) && turn.purchased_card = nil
+      if turn.player.has_ability(:no_buy_boost) && @purchased_card.nil?
         if turn.use_airport==true
           @@cli.say "You have been given 10 coins due to not buying anything."
         else
@@ -172,7 +173,9 @@ module MachiKoro
     end
     
     def end_turn(turn)
+      #todo have another turn???
       @@cli.say "Your turn is over!"
+      @purchased_card = nil
     end
     
     # end of actual turn action thingys!

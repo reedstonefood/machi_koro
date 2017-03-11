@@ -61,6 +61,20 @@ describe MachiKoro::Turn do
     end
   end
   
+  context "testing harbour" do
+    let (:log) { MachiKoro::Log.new }
+    let (:dr) { MachiKoro::DiceRoll.new(2, false, true, log)}
+    let (:dr2) { MachiKoro::DiceRoll.new(2, false, true, log)}
+    it "Override sum_dice works" do
+      expect(dr.sum_dice([6,5])).to eq(11)
+    end
+    before {dr2.sum_dice([6,5])
+            dr2.use_harbour}
+    it "Adds 2 to 11" do
+      expect(dr2.sum_dice).to eq(13)
+    end
+  end
+  
   context "stages of a turn" do
     it "first stage is train station" do
       expect(t.stage).to eq(:roll)

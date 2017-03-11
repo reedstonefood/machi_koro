@@ -12,6 +12,8 @@ module MachiKoro
   
     def initialize(mode = nil)
       @exit_flag = false
+      @purchased_card = nil
+      @verbose = mode=="v" ? true : false
       if mode == 'v'
         @mk = MachiKoro::Game.new("v")
       else
@@ -152,13 +154,17 @@ module MachiKoro
       catch :exit do
         loop do
           @mk.players.each do |player|
-            @@cli.say "*** It is now the turn of #{player.name}. Turn ##{@turn_no}"
-            turn = MachiKoro::Turn.new(@mk, player)
-            do_turn(turn)
-            throw :exit if @exit_flag==true
-          end
+            loop do
+              @@cli.say "*** It is now the turn of #{player.name}. Turn ##{@turn_no}"
+              turn = MachiKoro::Turn.new(@mk, player)
+              do_turn(turn)
+              throw :exit if @exit_flag==true
+              #Now implement the Amusement Park card - the turn is over unless you have a double & amusement park
+              break unless (turn.rolled_double? && player.has_ability(:double_turn))
+            end
+          end #end of a round - everyone has had a turn
           @turn_no += 1
-        end
+        end #end of the game - only reachable by throwing an :exit
       end
       end_game
     end

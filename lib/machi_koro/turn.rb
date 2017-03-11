@@ -38,11 +38,11 @@ module MachiKoro
       end
     end
     
-    def is_double
+    def is_double?
       if defined? @dice && @dice_count >= 2
         return @dice[0]==@dice[1] ? true : false
       end
-      return false
+      false
     end
     
     private
@@ -55,6 +55,7 @@ module MachiKoro
     
   end
 
+  # codebeat:disable[TOO_MANY_IVARS]
   class BuildingResolver
   
     attr_accessor :roll_val
@@ -99,44 +100,47 @@ module MachiKoro
     # Disabling ABC checks - each of these methods seems self-contained & well defined
     # It would feel artificial to cut them up anymore
     # codebeat:disable[ABC]
+    # Also disable excessive nesting for process_blue. There are really only 3 levels. The 4th is seperate for clarity.
+    # codebeat:disable[BLOCK_NESTING]
     def process_blue(blue_array)
       #curr_player = 0
       blue_array.each do |slot|
         income = slot[0].attribute[:base_income] * slot[1]
         income = tuna_boats if slot[0].attribute[:alternative_income_method] == :"roll 2D6"
         if !slot[0].attribute[:required_landmark].nil?
-          income = 0 if player.built_landmarks.find { |l| l.name == slot[0].attribute[:required_landmark] }.nil?
+          income = 0 if @p.has_built_landmark?(slot[0].attribute[:required_landmark])
         end
-        #TODO TUNA BOATS!!!!
         @log.add(__callee__, "#{slot[2].name} has #{slot[1]} x #{slot[0].attribute[:name]} = #{income}")
         slot[2].money += income
       end
     end
+    # codebeat:enable[BLOCK_NESTING]
     
     def process_green(green_array)
       green_array.each do |slot|
         #TODO make this more generic than the current shopping mall
-        multiplier = slot[2].has_ability(:symbol_boost) && slot[0].attribute[:symbol] == :bread ? 2 : 1 # this models the shopping mall, but doesn't model all the DB can hold
-        income = slot[0].attribute[:base_income] * slot[1]
+        bonus = slot[2].has_ability(:symbol_boost) && slot[0].attribute[:symbol] == :bread ? 1 : 0 # this models the shopping mall, but doesn't model all the DB can hold
+        income = (slot[0].attribute[:base_income] + bonus) * slot[1]
         if !slot[0].attribute[:establishment_multiplier].nil?
-          income = income * player.tableau.symbol_count(slot[0].attribute[:establishment_multiplier])
+          income = income * @p.tableau.establishment_count(slot[0].attribute[:establishment_multiplier])
         end
         if !slot[0].attribute[:symbol_multiplier].nil?
-          income = income * player.tableau.symbol_count(slot[0].attribute[:symbol_multiplier])
+          income = income * @p.tableau.symbol_count(slot[0].attribute[:symbol_multiplier])
         end
-        @log.add(__callee__,"#{slot[2].name} has #{slot[1]} x #{multiplier} x #{slot[0].attribute[:name]} x possibly something else = #{income}")
+        @log.add(__callee__,"#{slot[2].name} has (#{slot[1]} + #{bonus}) x #{slot[0].attribute[:name]} x possibly something else = #{income}")
         slot[2].money += income
       end
     end
     
     def process_red(red_array)
       red_array.each do |slot|
-        #TODO make this more generic than the current shopping mall
-        multiplier = slot[2].has_ability(:symbol_boost) ? 2 : 1 # this models the shopping mall, but doesn't model all the DB can hold
-        income = slot[0].attribute[:base_income] * multiplier * slot[1]  # Total due according to cards
+        bonus = slot[2].has_ability(:symbol_boost) ? 1 : 0 # TODO this models the shopping mall, but doesn't model all the DB can hold
+        income = (slot[0].attribute[:base_income] + bonus) * slot[1]  # Total due according to cards
+        if !slot[0].attribute[:required_landmark].nil?
+          income = 0 if !@p.has_built_landmark?(slot[0].attribute[:required_landmark])
+        end
         income = @p.money if @p.money < income              # The player can't lose more money than they have
-        log_msg = "#{slot[2].name} has #{slot[1]} x #{multiplier} x #{slot[0].attribute[:name]} = #{income} from #{@p.name}"
-        @log.add(__callee__,log_msg)
+        @log.add(__callee__,"#{slot[2].name} has (#{slot[1]} + #{bonus}) x #{slot[0].attribute[:name]} = #{income} from #{@p.name}")
         slot[2].money += income
         @p.money += -income
       end
@@ -150,11 +154,13 @@ module MachiKoro
     # Yay, tuna boats are awesome
     def tuna_boats()
       @tuna_haul ||= (1 + rand(6)) + (1 + rand(6))
+      puts "TUNA BOAT POWER!!!"
       @log.add(__callee__,"Looks like Tuna Boats! The roll is #{tuna_haul}")
       return tuna_haul
     end
   
   end
+  # codebeat:enable[TOO_MANY_IVARS]
   
   # codebeat:disable[TOO_MANY_IVARS]
   class Turn
@@ -185,14 +191,18 @@ module MachiKoro
     
     def roll_dice(dice_count)
       @dice ||= DiceRoll.new(dice_count, 
-                              @player.has_ability(:reroll)? false : true,
-                              @player.has_ability(:harbour)? false : true,
+                              @player.has_ability(:reroll)? true : false,
+                              @player.has_ability(:harbour)? true : false,
                               @g.log)
       @dice.roll
     end
 
     def sum_dice
       return @dice.sum_dice
+    end
+    
+    def rolled_double?
+      @dice.is_double?
     end
 
     # will return an error unless you roll the dice first

@@ -62,6 +62,9 @@ describe MachiKoro::Tableau do
     it "it agrees there is at least 1 wheat field" do
       expect(t.card_exists(wf)).to eq(true)
     end
+    it "reports as having 1 wheat field" do
+      expect(t.establishment_count("Wheat Field")).to eq(1)
+    end
   end
   context "has 4 cards added and 2 removed" do
     before { t.add_card(wf) 

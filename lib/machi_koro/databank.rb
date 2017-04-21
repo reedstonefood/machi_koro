@@ -41,8 +41,9 @@ module MachiKoro
         if data[attr.to_s].nil? # some of the attributes may be NULL in the database
           @attribute[attr] = nil
         else 
-          @attribute[attr] = data[attr.to_s].downcase.to_sym unless attr == :required_landmark # haha, symbol.to_sym
+          @attribute[attr] = data[attr.to_s].downcase.to_sym # haha, symbol.to_sym
           @attribute[attr] = data[attr.to_s].to_sym if attr == :required_landmark # landmark names should reflect raw name, as we want the landmark names to be capitalized when they are displayed on screen
+          @attribute[attr] = data[attr.to_s].to_sym if attr == :establishment_multiplier # landmark names should reflect raw name, as we want the landmark names to be capitalized when they are displayed on screen
         end
       end
       

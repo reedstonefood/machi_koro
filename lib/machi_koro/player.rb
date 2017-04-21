@@ -23,7 +23,7 @@ module MachiKoro
     end
 
     def has_built_landmark?(find_landmark)
-      !@built_landmarks.find { |l| l.name == find_landmark }.nil?
+      !@built_landmarks.find { |l| l.name == find_landmark.to_s }.nil?
     end
     
   end

@@ -71,7 +71,7 @@ module MachiKoro
     
     def establishment_count(target)
       # for things like "get 1 coin for every flower orchard"
-      @deck.find_all { |s| s[0].attribute[:name]==target}.inject(0){ |sum, s| sum + s[1] }
+      @deck.find_all { |s| s[0].attribute[:name]==target.to_s}.inject(0){ |sum, s| sum + s[1] }
     end
     
     def console_output()

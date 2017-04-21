@@ -68,10 +68,15 @@ describe MachiKoro::Turn do
     it "Override sum_dice works" do
       expect(dr.sum_dice([6,5])).to eq(11)
     end
-    before {dr2.sum_dice([6,5])
+    before {dr2.fix_dice([6,5])
             dr2.use_harbour}
     it "Adds 2 to 11" do
       expect(dr2.sum_dice).to eq(13)
+    end
+    before {dr.fix_dice([4,5])
+            dr.use_harbour}
+    it "Does not add 2 if you roll less than 10" do
+      expect(dr.sum_dice).to eq(9)
     end
   end
   

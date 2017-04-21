@@ -16,6 +16,7 @@ module MachiKoro
     #            :purchase_card,
     #            :check_for_win,
     #            :consider_airport,
+	#            :consider_free_turn,
     #            :end_turn]
     
     def roll(turn)
@@ -42,9 +43,10 @@ module MachiKoro
     def consider_reroll(turn)
       @@cli.say "CONSIDER REROLL!!!"
       answer = nil
-      if turn.player.has_ability(:reroll)
+      #if turn.player.has_ability(:reroll)
+      if turn.dice.reroll_available == true
         loop do
-          answer = @@cli.ask "Do you want to re-roll your roll of (#{turn.sum_dice})? "
+          answer = @@cli.ask "Do you want to re-roll your roll of #{turn.sum_dice}? "
           break if YES_NO_VALUES.include? answer
           common_options(answer)
         end
@@ -171,7 +173,14 @@ module MachiKoro
         end
       end
     end
-    
+	
+    #def consider_free_turn(turn)
+    #  if turn.player.has_ability(:double_free_turn) && turn.rolled_double?
+	#    @@cli.say("Free turn - rolled a double & have the appropriate ability")
+	#  end
+	#  false
+    #end
+	
     def end_turn(turn)
       #todo have another turn???
       @@cli.say "Your turn is over!"

@@ -2,7 +2,7 @@ module MachiKoro
 
   class DiceRoll
   
-    attr_reader :dice_count, :reroll_available, :harbour_available
+    attr_reader :dice_count, :harbour_available, :reroll_available
   
     def initialize(dice_count, reroll_available, harbour_available, log)
       @dice_count = dice_count
@@ -24,12 +24,13 @@ module MachiKoro
     end
     
     def sum_dice(input = @dice)
-      @sum_dice ||= input.inject(0, :+)
+      input.inject(0, :+) # did use a ||= but re-rolls messed it up
     end
     
     def use_harbour
-      if @sum_dice >=10 && @harbour_available == true
-        @sum_dice += 2
+      if self.sum_dice >=10 && @harbour_available == true
+        #@sum_dice += 2
+        @dice[2] = 2 # pretend it has a third dice that is a 2
         @harbour_available = false
         @log.add(__callee__, 'Harbour has been activated')
         true
@@ -43,6 +44,11 @@ module MachiKoro
         return @dice[0]==@dice[1] ? true : false
       end
       false
+    end
+    
+    # Used for testing
+    def fix_dice(desired_dice_array)
+      @dice = desired_dice_array
     end
     
     private
@@ -106,9 +112,9 @@ module MachiKoro
       #curr_player = 0
       blue_array.each do |slot|
         income = slot[0].attribute[:base_income] * slot[1]
-        income = tuna_boats if slot[0].attribute[:alternative_income_method] == :"roll 2D6"
+        income = tuna_boats if slot[0].attribute[:alternative_income_method] == :"roll 2d6"
         if !slot[0].attribute[:required_landmark].nil?
-          income = 0 if @p.has_built_landmark?(slot[0].attribute[:required_landmark])
+          income = 0 if !slot[2].has_built_landmark?(slot[0].attribute[:required_landmark])
         end
         @log.add(__callee__, "#{slot[2].name} has #{slot[1]} x #{slot[0].attribute[:name]} = #{income}")
         slot[2].money += income
@@ -137,7 +143,7 @@ module MachiKoro
         bonus = slot[2].has_ability(:symbol_boost) ? 1 : 0 # TODO this models the shopping mall, but doesn't model all the DB can hold
         income = (slot[0].attribute[:base_income] + bonus) * slot[1]  # Total due according to cards
         if !slot[0].attribute[:required_landmark].nil?
-          income = 0 if !@p.has_built_landmark?(slot[0].attribute[:required_landmark])
+          income = 0 if !slot[2].has_built_landmark?(slot[0].attribute[:required_landmark])
         end
         income = @p.money if @p.money < income              # The player can't lose more money than they have
         @log.add(__callee__,"#{slot[2].name} has (#{slot[1]} + #{bonus}) x #{slot[0].attribute[:name]} = #{income} from #{@p.name}")
@@ -165,7 +171,7 @@ module MachiKoro
   # codebeat:disable[TOO_MANY_IVARS]
   class Turn
 
-    attr_accessor :stage, :player
+    attr_accessor :stage, :player, :dice
     # each turn, the following steps happen / must be checked
     # Useful to prompt the front end regarding what is to be done next
     @@stages = [:roll,

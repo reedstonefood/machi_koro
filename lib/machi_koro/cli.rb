@@ -31,6 +31,7 @@ module MachiKoro
     end
     
     def end_game
+	  @@cli.ask "It's the end of the game. Press enter to end the program."
       @@cli.say "Goodbye!"
     end
     
@@ -160,7 +161,7 @@ module MachiKoro
               do_turn(turn)
               throw :exit if @exit_flag==true
               #Now implement the Amusement Park card - the turn is over unless you have a double & amusement park
-              break unless (turn.rolled_double? && player.has_ability(:double_turn))
+              break unless (turn.rolled_double? && player.has_ability(:double_free_turn))
             end
           end #end of a round - everyone has had a turn
           @turn_no += 1

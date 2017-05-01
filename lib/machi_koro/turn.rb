@@ -97,9 +97,9 @@ module MachiKoro
   
     def process_cards(roll_val = @roll_val)
       slots = get_cards(roll_val)
+      process_red(slots[:red])
       process_blue(slots[:blue])
       process_green(slots[:green])
-      process_red(slots[:red])
       process_purple(slots[:purple])
     end
     
@@ -159,7 +159,7 @@ module MachiKoro
     
     # Yay, tuna boats are awesome
     def tuna_boats()
-      @tuna_haul ||= (1 + rand(6)) + (1 + rand(6))
+      tuna_haul ||= (1 + rand(6)) + (1 + rand(6))
       puts "TUNA BOAT POWER!!!"
       @log.add(__callee__,"Looks like Tuna Boats! The roll is #{tuna_haul}")
       return tuna_haul
